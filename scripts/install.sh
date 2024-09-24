@@ -9,13 +9,11 @@ BINARY_NAME="echo-cli"
 # Get the latest release version from GitHub API
 VERSION=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
-# Detect the OS
+# Detect the OS and select the appropriate binary name
 if [ "$OS" = "linux" ]; then
-    BINARY="${BINARY_NAME}"
+    BINARY="${BINARY_NAME}-linux"
 elif [ "$OS" = "darwin" ]; then
-    BINARY="${BINARY_NAME}"
-elif [ "$OS" = "windows" ]; then
-    BINARY="${BINARY_NAME}.exe"
+    BINARY="${BINARY_NAME}-macos"
 else
     echo "Unsupported OS: $OS"
     exit 1
@@ -34,8 +32,7 @@ curl -L "$URL" -o "$TMP_FILE"
 # Make the binary executable
 chmod +x "$TMP_FILE"
 
-# Move the binary to /usr/local/bin (requires sudo if not writable)
-echo "Installing $BINARY to /usr/local/bin ..."
+# Rename the binary to echo-cli and move it to /usr/local/bin
 sudo mv "$TMP_FILE" /usr/local/bin/$BINARY_NAME
 
 # Clean up the temp directory
